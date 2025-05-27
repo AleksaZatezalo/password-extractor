@@ -1,25 +1,43 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import parse_qs
+import json
 
 class SimplePOSTHandler(BaseHTTPRequestHandler):
     def do_POST(self):
-        # Get content length from headers
+        # Read body
         content_length = int(self.headers.get('Content-Length', 0))
-        
-        # Read the body of the request
-        post_data = self.rfile.read(content_length)
-        
-        # Print the request to stdout
-        print(f"\nReceived POST request on path: {self.path}")
-        print("Headers:")
-        print(self.headers)
-        print("Body:")
-        print(post_data.decode('utf-8'))
-        print("="*60)
+        post_data = self.rfile.read(content_length).decode('utf-8')
 
-        # Send a simple response
+        print(f"\n🔔 Received POST request on path: {self.path}")
+        print("📄 Headers:")
+        for key, value in self.headers.items():
+            print(f"  {key}: {value}")
+        
+        print("\n📝 Parsed Body:")
+
+        content_type = self.headers.get("Content-Type", "")
+        if "application/json" in content_type:
+            try:
+                data = json.loads(post_data)
+                for key, value in data.items():
+                    print(f"  {key}: {value}")
+            except json.JSONDecodeError:
+                print("  ⚠️ Invalid JSON data")
+        elif "application/x-www-form-urlencoded" in content_type:
+            data = parse_qs(post_data)
+            for key, value in data.items():
+                print(f"  {key}: {', '.join(value)}")
+        else:
+            print("  🔍 Raw body (unparsed):")
+            print(f"  {post_data}")
+
+        print("=" * 60)
+
+        # Respond to client
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(b"Received POST request\n")
+        self.wfile.write(b"POST data received and printed.\n")
+
 
 def run(server_class=HTTPServer, handler_class=SimplePOSTHandler, port=8080):
     server_address = ('', port)
