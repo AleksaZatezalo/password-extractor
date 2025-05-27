@@ -18,6 +18,7 @@ Ensure you have Python 3.x installed. You also need the following packages:
 
 1. pycryptodome
 2. pypiwin32
+3. requests
 
 ## Security Notice
 
