@@ -21,7 +21,7 @@ def chrome_date_and_time(chrome_data):
     Returns date and time from google chrome datafile.
     """
 
-    pass
+    return datetime(1601, 1, 1) + timedelta(microseconds=chrome_data)
 
 def fetching_encryption_key():
     """
