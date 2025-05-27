@@ -1,5 +1,5 @@
 # Chrome Password Extractor
-This Python script extracts and decrypts saved passwords from Google Chrome on Windows systems. It works by accessing Chrome's encrypted login database and decrypting it using the system-stored encryption key.
+This Python script extracts and decrypts saved passwords from Google Chrome on Windows systems. It works by accessing Chrome's encrypted login database and decrypting it using the system-stored encryption key. This git repo comes with a server that recives POST requests and prints data to standard output.
 
 ## How it works
 
